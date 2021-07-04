@@ -10,7 +10,7 @@ module V1
       if @user.save!
         render json: @user, serializer: V1::SessionSerializer, root: nil
       else
-        render json: { error: t('user_create_error') }, status: :unprocessable_entity
+        render json: { error: 'user_create_error' }, status: :unprocessable_entity
       end
     end
 
@@ -21,9 +21,3 @@ module V1
   end
 end
 
-
-# signup
-# curl localhost:3000/v1/users --data '{"user": {"email": "user2@example.com", "password": "mypass"}}' -v -H "Accept: application/json" -H "Content-type: application/json"
-# login
-# curl localhost:3000/v1/login --data 'email=user2@example.com&password=mypass'
-#

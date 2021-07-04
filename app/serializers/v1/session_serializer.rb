@@ -1,4 +1,3 @@
-# app/serializers/v1/session_serializer.rb
 module V1
   class SessionSerializer < ActiveModel::Serializer
 
