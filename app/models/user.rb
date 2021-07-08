@@ -8,7 +8,7 @@ class User < ApplicationRecord
 
   validates :email, presence: true
 
-  has_many :words, dependent: :destroy
+  has_many :wordbooks, dependent: :destroy
 
   def update_access_token!
     self.access_token = "#{self.id}:#{Devise.friendly_token}"

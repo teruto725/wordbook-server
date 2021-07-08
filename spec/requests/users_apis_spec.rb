@@ -1,10 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe "UsersApis", type: :request do
-  describe "GET /users_apis" do
-    it "works! (now write some real specs)" do
-      get users_apis_path
-      expect(response).to have_http_status(200)
+RSpec.describe "Users", type: :request do
+  describe "Post /login" do
+    before do
+      @user = create(:user)
     end
   end
 end

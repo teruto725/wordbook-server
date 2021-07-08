@@ -1,50 +1,52 @@
 module V1
   class WordsController < ApplicationController
-    # POST
-    # Create an user
+
     def create
-      user = current_user
-      word = user.words.create! english: params[:english], japanese: params[:japanese], difficulty: 0
-      render json: word, serializer: V1::WordSerializer
+      @wordbook = Wordbook.find params[:wordbook_id]
+      @word = @wordbook.words.create! english: params[:english], japanese: params[:japanese], difficulty: 0, count:0
+      render json: @word, serializer: V1::WordSerializer
     rescue ActiveRecord::RecordInvalid
       render json: {error: "サーバーエラーです。もう一度やり直してください"}, status: :internal_server_error
     end
 
     def index
-      user = current_user
-      words = user.words
-      render json: words, each_serializer: V1::WordSerializer
+      @wordbook = Wordbook.find params[:wordbook_id]
+      @words = @wordbook.words
+      render json: @words, each_serializer: V1::WordSerializer
     end
 
     def update
-      word= Word.find(params[:id])
-      if word.user_id == current_user.id
-        word.update!(english: params[:english], japanese:params[:japanese], difficulty: params[:difficulty])
-        render json: word, serializer: V1::WordSerializer
-      else
-        render json: {error: "存在しない単語です"}, status: :not_found
-      end
+      @wordbook = Wordbook.find params[:wordbook_id]
+      @word = Word.find params[:id]
+      render json: @word, each_serializer: V1::WordSerializer
     end
 
     def destroy
-      word = Word.find(params[:id])
-      if word.user_id == current_user.id
-        render json: word, serializer: V1::WordSerializer
-      else
-        render json: {error: "存在しない単語です"}, status: :not_found
+      @word = Word.find params[:id]
+      @word.destroy
+      render json: @word, serializer: V1::WordSerializer
+    end
+
+    def success
+      @word=Word.find(params[:id])
+      if @word.user_id == current_user.id
+        count = word.count-1
+        diff = word.difficulty-(2*count)
+        @word.update!(difficulty: diff, count: count)
+        render json: @word, serializer: V1::WordSerializer
       end
     end
 
-    #最もdiffの高い単語を返す
-    def most_diff_word
-      user = current_user
-      words = user.words.order(:difficulty).limit(1)
-      if words.length == 1
-        render json: words[0], serializer: V1::WordSerializer
-      else
-        render json: {error: "まず単語を登録してください"}
+    def fault
+      @word=Word.find(params[:id])
+      if @word.user_id == current_user.id
+        count = word.count + 1
+        diff = word.difficulty-(2*count)
+        @word.update!(difficulty: diff, count: count)
+        render json: @word, serializer: V1::WordSerializer
       end
     end
+
   end
 end
 
