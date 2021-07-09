@@ -20,6 +20,14 @@ RSpec.describe "Wordbooks", type: :request do
       delete "/v1/wordbooks/#{id}", headers: {Authorization: @users[0].access_token}
       expect(response.status).to eq(200)
     end
+    it 'Wordbooksshowできるか' do
+      post "/v1/wordbooks", headers: {Authorization: @users[0].access_token}, params: {name: "book1"}
+      expect(response.status).to eq(200)
+      id = json["id"]
+      get "/v1/wordbooks/#{id}", headers: {Authorization: @users[0].access_token}
+      expect(response.status).to eq(200)
+    end
+
     it "mostdiffできるか" do
       post "/v1/wordbooks", headers: {Authorization: @users[0].access_token}, params: {name: "book1"}
       expect(response.status).to eq(200)

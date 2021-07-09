@@ -16,9 +16,12 @@ module V1
 
     def show
       @user = current_user
-      @wordbooks = @user.wordbooks.find params[:id]
+      logger.debug(params[:id])
+      @wordbook = @user.wordbooks.find params[:id]
       render json: @wordbook, serializer: V1::WordbookSerializer
     end
+
+
     def destroy
       @wordbook = Wordbook.find params[:id]
       @wordbook.destroy!
