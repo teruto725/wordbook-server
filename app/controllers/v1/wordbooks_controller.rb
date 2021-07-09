@@ -14,6 +14,11 @@ module V1
       render json: @wordbooks, each_serializer: V1::WordbookSerializer
     end
 
+    def show
+      @user = current_user
+      @wordbooks = @user.wordbooks.find params[:id]
+      render json: @wordbook, serializer: V1::WordbookSerializer
+    end
     def destroy
       @wordbook = Wordbook.find params[:id]
       @wordbook.destroy!
@@ -22,15 +27,16 @@ module V1
 
     #最もdiffの高い単語を返す
     def most_diff_word
-      @wordbook = Wordbook.find params[:id]
+      @wordbook = Wordbook.find params[:wordbook_id]
       @words = @wordbook.words.order(:difficulty).limit(1)
+      logger.debug(@words[0])
       if @words.length == 1
-        render json: @words[0], serializer: V1::WordbookSerializer
+        render json: @words[0], serializer: V1::WordSerializer
       else
         render json: {error: "まず単語を登録してください"}
       end
-    rescue ActiveRecord::RecordNotFound
-      render json: {error: "まず単語を登録してください"}, status: :not_found
+      #rescue ActiveRecord::RecordNotFound
+      #render json: {error: "まず単語を登録してください"}, status: :not_found
     end
 
   end
