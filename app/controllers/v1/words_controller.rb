@@ -28,23 +28,33 @@ module V1
     end
 
     def success
-      @word=Word.find(params[:id])
-      if @word.user_id == current_user.id
-        count = word.count-1
-        diff = word.difficulty-(2*count)
+      @wordbook = Wordbook.find params[:wordbook_id]
+      @word=Word.find(params[:word_id])
+      if @wordbook.user_id == current_user.id
+        count = @word.count-1
+        diff = @word.difficulty-(2*count)
+        logger.debug(diff)
         @word.update!(difficulty: diff, count: count)
-        render json: @word, serializer: V1::WordSerializer
+        @next_word = @wordbook.words.where.not(id: @word.id).order(:difficulty).limit(1)
+
+        render json: @next_word[0], serializer: V1::WordSerializer
       end
+      #rescue
+      #render json: {error: "単語は２つ以上登録してください"}, status: :not_found
     end
 
     def fault
-      @word=Word.find(params[:id])
-      if @word.user_id == current_user.id
-        count = word.count + 1
-        diff = word.difficulty-(2*count)
+      @wordbook = Wordbook.find params[:wordbook_id]
+      @word=Word.find(params[:word_id])
+      if @wordbook.user_id == current_user.id
+        count = @word.count + 1
+        diff = @word.difficulty-(2*count)
         @word.update!(difficulty: diff, count: count)
-        render json: @word, serializer: V1::WordSerializer
+        @next_word = @wordbook.words.where.not(id: @word.id).order(:difficulty).limit(1)
+        render json: @next_word[0], serializer: V1::WordSerializer
       end
+    rescue
+      render json: {error: "単語は２つ以上登録してください"}, status: :not_found
     end
 
   end

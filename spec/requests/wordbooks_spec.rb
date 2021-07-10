@@ -39,5 +39,27 @@ RSpec.describe "Wordbooks", type: :request do
       expect(response.status).to eq(200)
       expect(json["english"]).to eq("test")
     end
+
+    it "successできるか" do
+      post "/v1/wordbooks", headers: {Authorization: @users[0].access_token}, params: {name: "book1"}
+      expect(response.status).to eq(200)
+      id = json["id"]
+      post "/v1/wordbooks/#{id}/words", headers: {Authorization: @users[0].access_token}, params: {english: "test",japanese: "テスト"}
+      expect(response.status).to eq(200)
+      expect(json["english"]).to eq("test")
+      post "/v1/wordbooks/#{id}/words", headers: {Authorization: @users[0].access_token}, params: {english: "test2",japanese: "テスト2"}
+      expect(response.status).to eq(200)
+      expect(json["english"]).to eq("test2")
+      get "/v1/wordbooks/#{id}/most_diff", headers: {Authorization: @users[0].access_token}
+      expect(response.status).to eq(200)
+      word_id = json["id"]
+      word_en = json["english"]
+      get "/v1/wordbooks/#{id}/words/#{word_id}/success", headers: {Authorization: @users[0].access_token}
+      expect(response.status).to eq(200)
+      expect(json[id]).to_not eq word_id
+    end
+    it "faultできるか" do
+      post "/v1/wordbooks"
+    end
   end
 end
