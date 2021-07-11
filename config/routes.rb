@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     resources :users, only: [:create]
     resources :wordbooks, only:[:create,:index,:show,:destroy] do
       get "most_diff", action: :most_diff_word, controller: "wordbooks"
-      resources :words, only: [:create,:index, :update] do
+      resources :words, only: [:create,:index, :update, :destroy] do
         get "success", action: :success, controller: "words"
         get "fault", action: :fault, controller: "words"
       end

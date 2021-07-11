@@ -58,8 +58,17 @@ RSpec.describe "Wordbooks", type: :request do
       expect(response.status).to eq(200)
       expect(json[id]).to_not eq word_id
     end
-    it "faultできるか" do
-      post "/v1/wordbooks"
+    it "word deleteできるか" do
+      post "/v1/wordbooks", headers: {Authorization: @users[0].access_token}, params: {name: "book1"}
+      expect(response.status).to eq(200)
+      id = json["id"]
+      post "/v1/wordbooks/#{id}/words", headers: {Authorization: @users[0].access_token}, params: {english: "test",japanese: "テスト"}
+      expect(response.status).to eq(200)
+      expect(json["english"]).to eq("test")
+      word_id = json["id"]
+      delete "/v1/wordbooks/#{id}/words/#{word_id}", headers: {Authorization: @users[0].access_token}
+      expect(response.status).to eq(200)
+      expect(json["id"]).to eq(word_id)
     end
   end
 end
